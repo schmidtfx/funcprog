@@ -229,4 +229,20 @@ class FunSetSuite extends FunSuite {
       assert(!isRelation(c1, s, t3), "IsRelation 4")
     }
   }
+  
+  test("IsFunction") {
+    new TestSets {
+      val f1 = (x: Int, y: Int) => y == x * x
+      val s = (x: Int) => x >= 2 && x <= 7
+      val t1 = (x: Int) => x >= 2 && x <= 7
+      val c1 = cartesianProduct(s, t1)
+      assert(f1(2, 4), "IsFunction 1")
+      assert(f1(-2, 4), "IsFunction 2")
+      assert(f1(0, 0), "IsFunction 3")
+      assert(isRelation(f1, (x) => x >= -2 && x <= 2, (x) => x >= 0 && x <= 4), "IsFunction 4 (func: Relation Test)")
+      assert(isFunction(f1, (x) => x >= -2 && x <= 2, (x) => x >= 0 && x <= 4), "IsFunction 5 (func: Function Test)")
+      assert(isRelation(c1, s, t1), "IsFunction 6 (rel: Relation Test)")
+      assert(!isFunction(c1, s, t1), "IsFunction 7 (rel: Function Test)")
+    }
+  }
 }

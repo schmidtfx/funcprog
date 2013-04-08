@@ -93,7 +93,7 @@ object FunSets {
   
   def isRelation(r: Set2, s: Set, t: Set): Boolean = exists(s, (x) => exists(t, (y) => r(x, y)))
   
-  def isFunction(r: Set2, s: Set, t: Set): Boolean = forall(s, (x) => false)
+  def isFunction(r: Set2, s: Set, t: Set): Boolean = forall(s, (x) => !forall(t, (y) => r(x, y)))
 
   /**
    * Displays the contents of a set

@@ -6,6 +6,7 @@
 *.worksheet/
 *.cache
 *.DS_Store
+*/bin/
 
 # sbt specific
 dist/*

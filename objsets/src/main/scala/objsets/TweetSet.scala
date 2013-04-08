@@ -13,11 +13,25 @@ class Tweet(val user: String, val text: String, val retweets: Int) {
 }
 
 /**
- * @TODO: write documentation (contract on the tree). Explain why it's a good idea to
- * represent sets as a tree (here and/or in the assignment text).
+ * This represents a set of objects of type `Tweet` in the form of a binary search
+ * tree. Every branch in the tree has two children (two `TweetSet`s). There is an
+ * invariant which always holds: for every branch `b`, all elements in the left
+ * subtree are smaller than the tweet at `b`. The eleemnts in the right subtree are
+ * larger.
  *
- * Tweet equality is based on the tweet's text (see `def incl`). Hence, a `TweetSet`
- * could not contain two tweets with the same text from different users.
+ * Note that the above structure requires us to be able to compare two tweets (we
+ * need to be able to say which of two tweets is larger, or if they are equal). In
+ * this implementation, the equality / order of tweets is based on the tweet's text
+ * (see `def incl`). Hence, a `TweetSet` could not contain two tweets with the same
+ * text from different users.
+ *
+ *
+ * The advantage of representing sets as binary search trees is that the elements
+ * of the set can be found quickly. If you want to learn more you can take a look
+ * at the Wikipedia page [1], but this is not necessary in order to solve this
+ * assignment.
+ *
+ * [1] http://en.wikipedia.org/wiki/Binary_search_tree
  */
 abstract class TweetSet {
 
@@ -25,21 +39,21 @@ abstract class TweetSet {
    * This method takes a predicate and returns a subset of all the elements
    * in the original set for which the predicate is true.
    *
-   * @TOOD: tell them to think: can it be implemented here, or should it remain
-   * abstract and be implemented in the subclasses?
+   * Question: Can we implment this method here, or should it remain abstract
+   * and be implemented in the subclasses?
    */
   def filter(p: Tweet => Boolean): TweetSet = filterAcc(p, new Empty)
 
   /**
-   * @TODO: write doc, explain why we need acc. say it should be implemented in
-   * the subclasses.
+   * This is a helper method for `filter` that propagetes the accumulated tweets.
    */
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet
 
   /**
-   * @TODO: doc. regarding this method, and for all other methods that need to be
-   * implemented on `TweetSet`: say that the method can also remain abstract. tell them
-   * to think  about if it's necessary to have an auxiliary method (acc) or not.
+   * Returns a new `TweetSet` that is the union of `TweetSet`s `this` and `that`.
+   *
+   * Question: Should we implment this method here, or should it remain abstract
+   * and be implemented in the subclasses?
    */
   def union(that: TweetSet): TweetSet
 
@@ -48,6 +62,9 @@ abstract class TweetSet {
    *
    * Calling `mostRetweeted` on an empty set should throw an exception of
    * type `java.util.NoSuchElementException`.
+   *
+   * Question: Should we implment this method here, or should it remain abstract
+   * and be implemented in the subclasses?
    */
   def mostRetweeted: Tweet
 
@@ -57,6 +74,8 @@ abstract class TweetSet {
    * have the highest retweet count.
    *
    * Hint: the method `remove` on TweetSet will be very useful.
+   * Question: Should we implment this method here, or should it remain abstract
+   * and be implemented in the subclasses?
    */
   def descendingByRetweet: TweetList
 
@@ -75,7 +94,7 @@ abstract class TweetSet {
   def incl(tweet: Tweet): TweetSet
 
   /**
-   * @TODO: doc
+   * Returns a new `TweetSet` which excludes `tweet`.
    */
   def remove(tweet: Tweet): TweetSet
 
@@ -85,7 +104,6 @@ abstract class TweetSet {
   def contains(tweet: Tweet): Boolean
 
   /**
-   * @TODO: doc
    * This method takes a function and applies it to every element in the set.
    */
   def foreach(f: Tweet => Unit): Unit
@@ -100,8 +118,10 @@ class Empty extends TweetSet {
   def mostRetweeted = throw new NoSuchElementException
 
   def isEmpty = true
-
+  
   def descendingByRetweet: TweetList = Nil
+  
+  override def toString = "."
 
   /**
    * The following methods are already implemented
@@ -122,29 +142,29 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     right.filterAcc(p, left.filterAcc(p, if (p(elem)) acc incl elem else acc))
   }
 
-  def union(that: TweetSet): TweetSet = ((left union right) union that) incl elem
+  def union(that: TweetSet): TweetSet = (left union (right union that)) incl elem
+
+  def isEmpty = false
 
   def mostRetweeted: Tweet = {
-    def max(a: Tweet, b: Tweet) = {
-      if(a.retweets > b.retweets) a else b
-    }
-    
-    if(left.isEmpty && right.isEmpty) elem
-    else if(left.isEmpty) {
+    def max(a: Tweet, b: Tweet) = if (a.retweets > b.retweets) a else b
+    		
+    if (left.isEmpty && right.isEmpty) elem
+    else if (left.isEmpty) {
       max(elem, right.mostRetweeted)
-    } else if(right.isEmpty) {
+    } else if (right.isEmpty) {
       max(elem, left.mostRetweeted)
     } else {
       max(elem, max(left.mostRetweeted, right.mostRetweeted))
     }
   }
-
-  def isEmpty = false
-
+  
   def descendingByRetweet: TweetList = {
-    val max = this.mostRetweeted
-    new Cons(max, remove(max).descendingByRetweet)
+    val max = mostRetweeted
+    new Cons(max, remove(max).descendingByRetweet);
   }
+  
+  override def toString = "{" + left + "[" + elem + "]" + right + "}"
 
   /**
    * The following methods are already implemented
@@ -198,8 +218,8 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  lazy val googleTweets: TweetSet = TweetReader.allTweets filter { x => google exists { y => x.text contains y } }
-  lazy val appleTweets: TweetSet = TweetReader.allTweets filter { x => apple exists { y => x.text contains y } }
+  lazy val googleTweets: TweetSet = TweetReader.allTweets.filter(tw => google.exists(key => tw.text.contains(key)))
+  lazy val appleTweets: TweetSet = TweetReader.allTweets.filter(tw => apple.exists(key => tw.text.contains(key)))
 
   /**
    * A list of all tweets mentioning a keyword from either apple or google,

@@ -5,10 +5,6 @@ import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-/**
- * @TODO: write more tests.
- */
-
 @RunWith(classOf[JUnitRunner])
 class TweetSetSuite extends FunSuite {
   trait TestSets {
@@ -76,10 +72,7 @@ class TweetSetSuite extends FunSuite {
   
   test("large filter") {
     new TestSets {
-      println("do filter before load")
-      //val t1 = TweetReader.tweetSets(0)
-      //val t2 = TweetReader.tweetSets(1)
-      //TweetReader.toTweetSet(TweetReader.ParseTweets.getTweetData("gizmodo", TweetData.gizmodo)).foreach(x => println(x))
+      println(size(TweetReader.allTweets.filter(tw => tw.retweets == 321)))
     }
   }
 }

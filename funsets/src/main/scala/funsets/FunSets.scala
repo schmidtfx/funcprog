@@ -22,6 +22,10 @@ object FunSets {
    * Returns the set of the one given element.
    */
   def singletonSet(elem: Int): Set = x => x == elem 
+  
+  def boundedSet(a: Int, b: Int): Set = x => x >= a && x <= b
+  
+  def arbitrarySet(a: Int*): Set = x => a.contains(x)
 
   /**
    * Returns the union of the two given sets,

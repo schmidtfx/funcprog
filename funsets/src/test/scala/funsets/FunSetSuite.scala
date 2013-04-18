@@ -14,7 +14,6 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class FunSetSuite extends FunSuite {
 
-
   /**
    * Link to the scaladoc - very clear and detailed tutorial of FunSuite
    *
@@ -47,30 +46,29 @@ class FunSetSuite extends FunSuite {
     assert(1 + 2 === 3)
   }
 
-  
   import FunSets._
 
   test("contains is implemented") {
     assert(contains(x => true, 100))
   }
-  
+
   /**
    * When writing tests, one would often like to re-use certain values for multiple
    * tests. For instance, we would like to create an Int-set and have multiple test
    * about it.
-   * 
+   *
    * Instead of copy-pasting the code for creating the set into every test, we can
    * store it in the test class using a val:
-   * 
+   *
    *   val s1 = singletonSet(1)
-   * 
+   *
    * However, what happens if the method "singletonSet" has a bug and crashes? Then
    * the test methods are not even executed, because creating an instance of the
    * test class fails!
-   * 
+   *
    * Therefore, we put the shared values into a separate trait (traits are like
    * abstract classes), and create an instance inside each test method.
-   * 
+   *
    */
 
   trait TestSets {
@@ -82,15 +80,15 @@ class FunSetSuite extends FunSuite {
   /**
    * This test is currently disabled (by using "ignore") because the method
    * "singletonSet" is not yet implemented and the test would fail.
-   * 
+   *
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
   test("singletonSet(1) contains 1") {
-    
+
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
-     * to the values "s1" to "s3". 
+     * to the values "s1" to "s3".
      */
     new TestSets {
       /**
@@ -109,7 +107,7 @@ class FunSetSuite extends FunSuite {
       assert(!contains(s, 3), "Union 3")
     }
   }
-  
+
   test("intersect") {
     new TestSets {
       val s = intersect((x) => (x >= 1 && x <= 10), (x) => (x <= 5))
@@ -119,10 +117,10 @@ class FunSetSuite extends FunSuite {
       assert(!contains(s, 6), "Intersect 4")
     }
   }
-  
+
   test("diff") {
     new TestSets {
-      val s = diff((x => x >= 1 && x<= 10), (x) => (x <= 5))
+      val s = diff((x => x >= 1 && x <= 10), (x) => (x <= 5))
       assert(!contains(s, 1), "Diff 1")
       assert(!contains(s, 3), "Diff 2")
       assert(!contains(s, 5), "Diff 3")
@@ -131,7 +129,7 @@ class FunSetSuite extends FunSuite {
       assert(!contains(s, 11), "Diff 6")
     }
   }
-  
+
   test("filter") {
     new TestSets {
       val s = filter((x) => x >= 1 && x <= 10, (x) => (x <= 5))
@@ -143,7 +141,7 @@ class FunSetSuite extends FunSuite {
       assert(!contains(s, 11), "Diff 6")
     }
   }
-  
+
   test("forall") {
     new TestSets {
       val s = (x: Int) => x >= 1 && x <= 10
@@ -151,7 +149,7 @@ class FunSetSuite extends FunSuite {
       assert(!forall(s, (x => x <= 11 && x > 2)), "Forall 2")
     }
   }
-  
+
   test("exists") {
     new TestSets {
       val s = (x: Int) => x >= 1 && x <= 10
@@ -161,7 +159,7 @@ class FunSetSuite extends FunSuite {
       assert(exists(s, x => x > -2), "Exists 4")
     }
   }
-  
+
   test("map") {
     new TestSets {
       val s = (x: Int) => x >= 1 && x <= 10
@@ -177,18 +175,18 @@ class FunSetSuite extends FunSuite {
       assert(!contains(t, 14), "Map 9")
     }
   }
-  
+
   test("inclusion") {
     new TestSets {
       val s = (x: Int) => x < 2
       val t1 = (x: Int) => x < 7
       val t2 = (x: Int) => x < 0
-      
+
       assert(inclusion(s, t1), "Inclusion 1")
       assert(!inclusion(s, t2), "Inclusion 2")
     }
   }
-  
+
   test("Equals") {
     new TestSets {
       val s1_t = (x: Int) => x < 2
@@ -203,17 +201,17 @@ class FunSetSuite extends FunSuite {
       assert(!setEquals(s2_t, t4), "Equals 4")
     }
   }
-  
+
   test("Cartesian") {
     new TestSets {
       val s = singletonSet(2)
       val t = singletonSet(5)
-      
+
       val c = cartesianProduct(s, t)
       printSet(c)
     }
   }
-  
+
   test("IsRelation") {
     new TestSets {
       val s = (x: Int) => x >= 2 && x <= 7
@@ -222,14 +220,14 @@ class FunSetSuite extends FunSuite {
       val t3 = (x: Int) => x >= 20 && x <= 70
       val c1 = cartesianProduct(s, t1)
       val c2 = cartesianProduct(s, t2)
-      
+
       assert(isRelation(c1, s, t1), "IsRelation 1")
       assert(!isRelation(c1, s, t2), "IsRelation 2")
       assert(isRelation(c2, s, t2), "IsRelation 3")
       assert(!isRelation(c1, s, t3), "IsRelation 4")
     }
   }
-  
+
   test("IsFunction") {
     new TestSets {
       val f1 = (x: Int, y: Int) => y == x * x
@@ -244,5 +242,20 @@ class FunSetSuite extends FunSuite {
       assert(isRelation(c1, s, t1), "IsFunction 6 (rel: Relation Test)")
       assert(!isFunction(c1, s, t1), "IsFunction 7 (rel: Function Test)")
     }
+  }
+
+  test("Post1") {
+    val set1 = math.abs(_: Int) <= 4
+    val set2 = math.abs(_: Int) <= 6
+    val myRelation1 = math.abs(_: Int) <= 2 && math.abs(_: Int) <= 1
+
+    val myFunction = (x: Int, y: Int) => (set1(x)) && (set2(x)) && (x == 2 * y)
+
+    val myRelation2 = math.abs(_: Int) <= 5 && math.abs(_: Int) <= 1
+
+    assert(isRelation(myRelation1, set1, set2))
+    assert(isRelation(myRelation2, set1, set2))
+    assert(isRelation(myFunction, set1, set1))
+    assert(isFunction(myFunction, set1, set2))
   }
 }
